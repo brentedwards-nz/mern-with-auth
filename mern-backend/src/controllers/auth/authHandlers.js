@@ -1,6 +1,5 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const nodemon = require("nodemon");
 
 const User = require("../../models/userModel");
 const ResetToken = require("../../models/resetTokenModel");
@@ -111,6 +110,7 @@ const loginHandler = async (req, res) => {
         email: user.email,
         firstName: user.firstName,
         secondName: user.secondName,
+        token: token
       },
     });
 

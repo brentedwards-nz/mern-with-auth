@@ -8,6 +8,7 @@ require("dotenv").config();
 // Routes
 const authRoutes = require("./src/routes/authRoutes");
 const testRoutes = require("./src/routes/testRoutes");
+const dataRoutes = require("./src/routes/dataRoutes");
 
 // Server
 const app = express();
@@ -16,6 +17,7 @@ app.use(cors());
 app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 app.use("/api/test", testRoutes);
+app.use("/api/data", dataRoutes);
 const server = http.createServer(app);
 
 // Mongoose
