@@ -8,7 +8,7 @@ const apiClient = axios.create({
 
 apiClient.interceptors.request.use(
   (config) => {
-    const userDetails = localStorage.getItem("user");
+    const userDetails = localStorage.getItem("userDetails");
 
     if (userDetails) {
       const token = JSON.parse(userDetails).token;
@@ -80,6 +80,17 @@ export const resetpassword = async (data) => {
 };
 
 // secure routes
+
+export const getTracks = async (data) => {
+  try {
+    return await apiClient.get("/data/tracks");
+  } catch (exception) {
+    return {
+      error: true,
+      exception,
+    };
+  }
+};
 
 /*
 const checkResponseCode = (exception) => {

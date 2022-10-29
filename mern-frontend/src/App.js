@@ -13,6 +13,7 @@ import Unauthorised from './pages/auth/unauthorised/Unauthorised';
 import RequireAuth from './components/RequireAuth';
 import Home from './pages/home/Home'
 import Protected from './pages/protected/Protected'
+import Tracks from './pages/protected/Tracks'
 
 import Missing from './pages/missing/Missing';
 
@@ -33,7 +34,10 @@ function App() {
 
         <Route element={<RequireAuth />}>
           <Route exact path='home' element={<Home />} />
-          <Route exact path='protected' element={<Protected />} />
+          <Route exact path='protected' element={<Layout />}>
+            <Route path='' element={<Protected />} />
+            <Route path='tracks' element={<Tracks />} />
+          </Route>
         </Route>
 
         <Route path="*" element={<Missing />} />

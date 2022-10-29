@@ -50,6 +50,7 @@ const Login = () => {
         const email = response?.data?.userDetails?.email;
         const firstName = response?.data?.userDetails?.firstName;
         const secondName = response?.data?.userDetails?.secondName;
+        const token = response?.data?.userDetails?.token;
         const isLoggedIn = true;
 
         setLoginError({ isHidden: true, errorMessage: "" });
@@ -57,7 +58,8 @@ const Login = () => {
           isLoggedIn: isLoggedIn,
           email: email,
           firstName: firstName,
-          secondName: secondName
+          secondName: secondName,
+          token: token
         });
       }
     } catch (err) {
