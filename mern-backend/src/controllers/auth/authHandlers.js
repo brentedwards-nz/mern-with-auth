@@ -171,20 +171,32 @@ const logoutHandler = async (req, res) => {
 };
 
 const refreshHandler = async (req, res) => {
-  console.log("refreshHandler: " + req)
-
   const cookies = req.cookies;
 
-  if (!cookies[jwtCookieName]) {
-    console.log(`No jwt cookie: ${cookies?.jwt}`)
-    return res.status(401).json({ message: 'Unauthorized' });
-  }
+  if (!cookies?.jwt) return res.sendStatus(401);
+  const refreshToken = cookies.jwt;
 
-  return res.status(200).json({
-    refreshHandler: {
-      success: true,
-    },
-  });
+  const foundUser = await User.findOne({ refreshToken }).exec();
+  if (!foundUser) return res.sendStatus(403); //Forbidden 
+
+  console.log(foundUser);
+
+  // evaluate jwt 
+  jwt.verify(
+    refreshToken,
+    process.env.JWT_ENCRYPTION_REFRESH_TOKEN,
+    (err, decoded) => {
+      if (err || foundUser.username !== decoded.username) return res.sendStatus(403);
+
+      const accessToken = jwt.sign({ userId: foundUser._id, email: foundUser.email },
+        process.env.JWT_ENCRYPTION_TOKEN,
+        { expiresIn: "1h" }
+      );
+
+      console.log(accessToken)
+      res.json({ accessToken })
+    }
+  );
 };
 
 const verifyResetTokenHandler = async (req, res) => {

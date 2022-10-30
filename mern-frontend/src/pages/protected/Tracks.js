@@ -12,83 +12,84 @@ import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
 
-import { getTracks } from '../../services/api';
 import * as styles from '../../styles/styles.module';
 import spotify from '../../assets/spotify.png';
+import useAxios from "../..//hooks/useAxios";
+
 
 const Tracks = () => {
   const [displayedTracks, setDisplayedTracks] = useState([]);
-  const [tracks, setTracks] = useState([]);
-  const [downloadError, setDownloadError] = useState(false);
 
   const theme = useTheme();
 
-  useEffect(() => {
-    const downloadTracks = async () => {
-      try {
-        const response = await getTracks();
-        if (response.error) {
-          setDownloadError({ isHidden: false, errorMessage: response.exception?.response?.data })
-        } else {
-          setDownloadError({ isHidden: true, errorMessage: "" });
-          setTracks(response?.data?.data);
-        }
-      } catch (err) {
-        setDownloadError({ isHidden: false, errorMessage: err.data })
-      }
-    }
-    downloadTracks();
-  }, [])
+  const request = {
+    url: '/data/tracks',
+    method: 'GET',
+    // requestConfig: {  // Need useCallback to use this object
+    //   headers: {},
+    //   data: {}
+    // }
+  }
+  const [isLoading, downloadError, tracks] = useAxios(request);
 
   useEffect(() => {
     let t = [];
-    tracks.forEach((track) => {
+    if (isLoading) {
       t.push(
-        <Card key={track.id} sx={{ display: 'flex' }}>
-          <CardMedia
-            component="img"
-            sx={{ width: 160 }}
-            image={spotify}
-            alt={track.album}
-          />
-          <Box sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            width: '50%'
-          }}>
-            <CardContent
-              sx={{ flex: '1 0 auto' }}>
-              <Typography component="div" variant="h5">
-                {track.title}
-              </Typography>
-              <Typography variant="subtitle1" color="text.secondary" component="div">
-                {track.artist}
-              </Typography>
-            </CardContent>
-            <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, pb: 1 }}>
-              <IconButton aria-label="previous">
-                {theme.direction === 'rtl' ? <SkipNextIcon /> : <SkipPreviousIcon />}
-              </IconButton>
-              <IconButton aria-label="play/pause">
-                <PlayArrowIcon sx={{ height: 38, width: 38 }} />
-              </IconButton>
-              <IconButton aria-label="next">
-                {theme.direction === 'rtl' ? <SkipPreviousIcon /> : <SkipNextIcon />}
-              </IconButton>
+        <Typography style={styles.authMessage}>
+          Loading...
+        </Typography>
+      )
+    }
+    else {
+      tracks?.randomTracks.forEach((track) => {
+        t.push(
+          <Card key={track.id} sx={{ display: 'flex' }}>
+            <CardMedia
+              component="img"
+              sx={{ width: 160 }}
+              image={spotify}
+              alt={track.album}
+            />
+            <Box sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              width: '50%'
+            }}>
+              <CardContent
+                sx={{ flex: '1 0 auto' }}>
+                <Typography component="div" variant="h5">
+                  {track.title}
+                </Typography>
+                <Typography variant="subtitle1" color="text.secondary" component="div">
+                  {track.artist}
+                </Typography>
+              </CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, pb: 1 }}>
+                <IconButton aria-label="previous">
+                  {theme.direction === 'rtl' ? <SkipNextIcon /> : <SkipPreviousIcon />}
+                </IconButton>
+                <IconButton aria-label="play/pause">
+                  <PlayArrowIcon sx={{ height: 38, width: 38 }} />
+                </IconButton>
+                <IconButton aria-label="next">
+                  {theme.direction === 'rtl' ? <SkipPreviousIcon /> : <SkipNextIcon />}
+                </IconButton>
+              </Box>
             </Box>
-          </Box>
 
-        </Card>
-      );
-    });
+          </Card>
+        );
+      });
+    }
     setDisplayedTracks(t);
-  }, [tracks, theme.direction])
+  }, [downloadError, isLoading, tracks, theme.direction])
 
   return (
     <Container>
       {displayedTracks}
-      <Typography hidden={downloadError.isHidden} style={styles.authError}>
-        Error: {downloadError.errorMessage}
+      <Typography hidden={isLoading && downloadError} style={styles.authError}>
+        Error: {downloadError}
       </Typography>
     </Container>
   )

@@ -1,9 +1,20 @@
 import axios from "axios";
 //import { logout } from "../utils/auth";
 
-const apiClient = axios.create({
-  baseURL: "http://localhost:5020/api",
+const BASE_URL = "http://localhost:5020/api";
+export const apiClient = axios.create({
+  baseURL: BASE_URL,
   timeout: 1000,
+  withCredentials: true
+});
+
+export const apiClientPrivate = axios.create({
+  baseURL: BASE_URL,
+  timeout: 1000,
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  withCredentials: true
 });
 
 apiClient.interceptors.request.use(

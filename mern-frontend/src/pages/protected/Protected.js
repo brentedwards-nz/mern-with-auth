@@ -1,11 +1,15 @@
 import React from 'react'
-import { Grid, Paper, Avatar, Typography, Link } from '@mui/material'
+import { Grid, Paper, Avatar, Typography, Link, Button } from '@mui/material'
 import useLocalStorage from '../../hooks/useLocalStorage';
 import * as styles from '../../styles/styles.module';
 import LogoutIcon from '@mui/icons-material/Logout';
+import useRefreshToken from '../..//hooks/useRefreshtoken';
 
 function Protected() {
   const [userDetails] = useLocalStorage('userDetails', {})
+
+  const refresh = useRefreshToken();
+
   return (
     <Grid>
       <Paper elevation={10} style={styles.protectedPage.paperStyle}>
@@ -18,6 +22,14 @@ function Protected() {
               Log out
             </Link>
           </Typography>
+          <Button
+            type='submit'
+            sx={{ color: '#117e6a' }}
+            fullWidth
+            onClick={() => refresh()}
+          >
+            Refresh
+          </Button>
         </Grid>
       </Paper >
     </Grid >
