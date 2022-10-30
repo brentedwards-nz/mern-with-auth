@@ -3,7 +3,7 @@ import { Grid, Paper, Avatar, Typography, Link, Button } from '@mui/material'
 import useLocalStorage from '../../hooks/useLocalStorage';
 import * as styles from '../../styles/styles.module';
 import LogoutIcon from '@mui/icons-material/Logout';
-import useRefreshToken from '../..//hooks/useRefreshtoken';
+import useRefreshToken from '../../hooks/useRefreshToken';
 
 function Protected() {
   const [userDetails] = useLocalStorage('userDetails', {})

@@ -5,7 +5,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
 import { validateLoginForm } from '../../../utils/validators';
 import { login } from '../../../services/api';
-import useLocalStorage from '../../../hooks/useLocalStorage';
+import useAuth from '../../../hooks/useUserDetails';
 import * as styles from '../../../styles/styles.module';
 
 const Login = () => {
@@ -15,7 +15,7 @@ const Login = () => {
   const [loginError, setLoginError] = useState({ isHidden: true, errorMessage: "" })
 
   const navigate = useNavigate();
-  const [userDetails, setUserDetails] = useLocalStorage('userDetails', {})
+  const [userDetails, setUserDetails] = useAuth()
 
   useEffect(() => {
     if (userDetails?.isLoggedIn) {

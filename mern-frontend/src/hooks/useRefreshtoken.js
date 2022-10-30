@@ -1,22 +1,19 @@
 import { apiClient } from '../services/api'
-//import useLocalStorage from './useLocalStorage';
-import useAuth from './useAuth';
+import useUserDetails from './useUserDetails';
 
 const useRefreshToken = () => {
-    const { setAuth } = useAuth();
+    const [userDetails, setUserDetails] = useUserDetails();
 
     const refresh = async () => {
-        console.log("*** useRefreshToken ***");
         try {
             const response = await apiClient.get('/auth/refresh', {
                 withCredentials: true
             });
-            console.log(response.data.accessToken);
-            setAuth(prev => {
+            setUserDetails(prev => {
                 return {
                     ...prev,
                     roles: response.data.roles,
-                    accessToken: response.data.accessToken
+                    token: response.data.accessToken
                 }
             });
             return response.data.accessToken;

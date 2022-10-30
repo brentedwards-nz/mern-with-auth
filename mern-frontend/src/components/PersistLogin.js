@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
-import useRefreshToken from '../hooks/useRefreshtoken';
-import useAuth from '../hooks/useAuth';
+import useRefreshToken from '../hooks/useRefreshToken';
+import useAuth from '../hooks/useUserDetails';
 import { isPlainObject } from '@mui/utils';
 
 const PersistLogin = () => {
