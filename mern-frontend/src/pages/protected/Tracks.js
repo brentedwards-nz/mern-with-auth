@@ -14,8 +14,7 @@ import SkipNextIcon from '@mui/icons-material/SkipNext';
 
 import * as styles from '../../styles/styles.module';
 import spotify from '../../assets/spotify.png';
-import useAxios from "../..//hooks/useAxios";
-
+import useAxios from "../../hooks/useAxios";
 
 const Tracks = () => {
   const [displayedTracks, setDisplayedTracks] = useState([]);
@@ -36,8 +35,15 @@ const Tracks = () => {
     let t = [];
     if (isLoading) {
       t.push(
-        <Typography style={styles.authMessage}>
+        <Typography key={1} style={styles.authMessage}>
           Loading...
+        </Typography>
+      )
+    }
+    else if(!isLoading && (tracks === null)) {
+      t.push(
+        <Typography key={1} style={styles.authMessage}>
+          Empty...
         </Typography>
       )
     }

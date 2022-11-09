@@ -1,4 +1,4 @@
-import { apiClient } from '../services/api'
+import { apiClientPrivate } from '../services/api'
 import useUserDetails from './useUserDetails';
 
 const useRefreshToken = () => {
@@ -6,7 +6,7 @@ const useRefreshToken = () => {
 
     const refresh = async () => {
         try {
-            const response = await apiClient.get('/auth/refresh', {
+            const response = await apiClientPrivate.get('/auth/refresh', {
                 withCredentials: true
             });
             setUserDetails(prev => {

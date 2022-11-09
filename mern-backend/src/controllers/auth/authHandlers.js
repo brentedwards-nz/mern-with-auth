@@ -33,7 +33,7 @@ const registerHandler = async (req, res) => {
     const token = jwt.sign(
       { userId: user._id, email },
       process.env.JWT_ENCRYPTION_TOKEN,
-      { expiresIn: "1h" }
+      { expiresIn: "5s" }
     );
 
     const refreshToken = jwt.sign(
@@ -89,7 +89,7 @@ const loginHandler = async (req, res) => {
     // create JWT token
     const token = jwt.sign({ userId: user._id, email },
       process.env.JWT_ENCRYPTION_TOKEN,
-      { expiresIn: "1h" }
+      { expiresIn: "5s" }
     );
 
     const refreshToken = jwt.sign(
@@ -190,7 +190,7 @@ const refreshHandler = async (req, res) => {
 
       const accessToken = jwt.sign({ userId: foundUser._id, email: foundUser.email },
         process.env.JWT_ENCRYPTION_TOKEN,
-        { expiresIn: "1h" }
+        { expiresIn: "5s" }
       );
 
       console.log(accessToken)

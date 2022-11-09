@@ -1,9 +1,9 @@
 import { Navigate, Outlet } from 'react-router-dom';
 
-import useLocalStorage from '../hooks/useLocalStorage';
+import useUserDetails from '../hooks/useUserDetails';
 
 const RequireAuth = () => {
-  const [userDetails] = useLocalStorage('userDetails', {})
+  const [userDetails] = useUserDetails();
   return (
     userDetails?.isLoggedIn
       ? <Outlet />

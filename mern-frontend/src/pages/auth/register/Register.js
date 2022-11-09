@@ -5,7 +5,7 @@ import HowToRegIcon from '@mui/icons-material/HowToReg';
 
 import { validateRegisterForm } from '../../../utils/validators';
 import { register } from '../../../services/api';
-import useLocalStorage from '../../../hooks/useLocalStorage';
+import useUserDetails from '../../../hooks/useUserDetails';
 import * as styles from '../../../styles/styles.module';
 
 const Register = () => {
@@ -16,7 +16,7 @@ const Register = () => {
   const [firstName, setFirstName] = useState("");
   const [secondName, setSecondName] = useState("");
   const [registerError, setRegisterError] = useState({ isHidden: true, errorMessage: "" })
-  const [userDetails, setUserDetails] = useLocalStorage('userDetails', {})
+  const [userDetails, setUserDetails] = useUserDetails()
 
   const navigate = useNavigate();
   useEffect(() => {

@@ -1,10 +1,10 @@
-import useLocalStorage from "../../../hooks/useLocalStorage"
+import useUserDetails from "../../../hooks/useUserDetails"
 import { Navigate } from 'react-router-dom';
 import { useEffect } from "react";
 
 const Logout = () => {
-  const [userDetails, setUserDetails] = useLocalStorage('userDetails', {})
-  
+  const [userDetails, setUserDetails] = useUserDetails();
+
   useEffect(() => {
     setUserDetails({});
   }, [setUserDetails]);

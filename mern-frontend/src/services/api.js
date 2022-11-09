@@ -1,23 +1,21 @@
 import axios from "axios";
-//import { logout } from "../utils/auth";
 
-const BASE_URL = "http://localhost:5020/api";
-export const apiClient = axios.create({
-  baseURL: BASE_URL,
-  timeout: 1000,
-  withCredentials: true
-});
+// export const apiClient = axios.create({
+//   baseURL: process.env.REACT_APP_BACKEND_API_URL,
+//   timeout: process.env.REACT_APP_BACKEND_API_DEFAULT_TIMEOUT_MS,
+//   withCredentials: true
+// });
 
 export const apiClientPrivate = axios.create({
-  baseURL: BASE_URL,
-  timeout: 1000,
+  baseURL: process.env.REACT_APP_BACKEND_API_URL,
+  timeout: process.env.REACT_APP_BACKEND_API_DEFAULT_TIMEOUT_MS,
   headers: {
     'Content-Type': 'application/json'
   },
   withCredentials: true
 });
 
-apiClient.interceptors.request.use(
+apiClientPrivate.interceptors.request.use(
   (config) => {
     const userDetails = localStorage.getItem("userDetails");
 
@@ -37,7 +35,7 @@ apiClient.interceptors.request.use(
 
 export const login = async (data) => {
   try {
-    return await apiClient.post("/auth/login", data);
+    return await apiClientPrivate.post("/auth/login", data);
   } catch (exception) {
     return {
       error: true,
@@ -48,7 +46,7 @@ export const login = async (data) => {
 
 export const register = async (data) => {
   try {
-    return await apiClient.post("/auth/register", data);
+    return await apiClientPrivate.post("/auth/register", data);
   } catch (exception) {
     return {
       error: true,
@@ -59,7 +57,7 @@ export const register = async (data) => {
 
 export const reset = async (data) => {
   try {
-    return await apiClient.post("/auth/reset", data, { timeout: 5000 });
+    return await apiClientPrivate.post("/auth/reset", data, { timeout: 5000 });
   } catch (exception) {
     return {
       error: true,
@@ -70,7 +68,7 @@ export const reset = async (data) => {
 
 export const verifyresettoken = async (data) => {
   try {
-    return await apiClient.post("/auth/verifyresettoken", data);
+    return await apiClientPrivate.post("/auth/verifyresettoken", data);
   } catch (exception) {
     return {
       error: true,
@@ -81,7 +79,7 @@ export const verifyresettoken = async (data) => {
 
 export const resetpassword = async (data) => {
   try {
-    return await apiClient.post("/auth/resetpassword", data);
+    return await apiClientPrivate.post("/auth/resetpassword", data);
   } catch (exception) {
     return {
       error: true,
@@ -94,7 +92,7 @@ export const resetpassword = async (data) => {
 
 export const getTracks = async (data) => {
   try {
-    return await apiClient.get("/data/tracks");
+    return await apiClientPrivate.get("/data/tracks");
   } catch (exception) {
     return {
       error: true,

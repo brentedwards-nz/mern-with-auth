@@ -1,11 +1,11 @@
 import React from 'react'
 import { Grid, Paper, Avatar, Typography, Link } from '@mui/material'
-import useLocalStorage from '../../hooks/useLocalStorage';
+import useUserDetails from '../../hooks/useUserDetails';
 import * as styles from '../../styles/styles.module';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 
 function Home() {
-  const [userDetails] = useLocalStorage('userDetails', {})
+  const [userDetails] = useUserDetails();
   return (
     <Grid>
       <Paper elevation={10} style={styles.protectedPage.paperStyle}>

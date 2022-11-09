@@ -1,7 +1,11 @@
 import { useCallback, useEffect, useState } from 'react'
-import { apiClient } from '../services/api';
+//import { apiClientPrivate } from '../services/api';
+
+import useAxiosPrivate from './useAxiosPrivate';
 
 const useAxios = (request) => {
+  const apiClientPrivate = useAxiosPrivate();
+
   const {
     method,
     url,
@@ -26,11 +30,11 @@ const useAxios = (request) => {
       setisLoading(true);
       try {
 
-        const response = await apiClient[method.toLowerCase()](url, {
+        const response = await apiClientPrivate[method.toLowerCase()](url, {
           ...config(),
-          signal: controller.signal
+          //signal: controller.signal
         })
-        console.log("Got response")
+        console.table(response.data)
         setData(response.data)
       } catch (error) {
         setError(error.message);
