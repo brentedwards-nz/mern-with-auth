@@ -17,6 +17,11 @@ export const apiClientPrivate = axios.create({
 
 apiClientPrivate.interceptors.request.use(
   (config) => {
+    if (config.baseURL === undefined) {
+      console.log("Server not set in api client")
+      return Promise.reject("Server not available");
+    }
+
     const userDetails = localStorage.getItem("userDetails");
 
     if (userDetails) {

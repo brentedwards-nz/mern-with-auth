@@ -6,6 +6,7 @@ const ResetToken = require("../../models/resetTokenModel");
 const Email = require("../../services/email");
 
 const jwtCookieName = "jwt";
+const ACCESS_TOKEN_EXPIRY = "1h";
 
 const registerHandler = async (req, res) => {
   try {
@@ -33,7 +34,7 @@ const registerHandler = async (req, res) => {
     const token = jwt.sign(
       { userId: user._id, email },
       process.env.JWT_ENCRYPTION_TOKEN,
-      { expiresIn: "5s" }
+      { expiresIn: ACCESS_TOKEN_EXPIRY }
     );
 
     const refreshToken = jwt.sign(
@@ -89,7 +90,7 @@ const loginHandler = async (req, res) => {
     // create JWT token
     const token = jwt.sign({ userId: user._id, email },
       process.env.JWT_ENCRYPTION_TOKEN,
-      { expiresIn: "5s" }
+      { expiresIn: ACCESS_TOKEN_EXPIRY }
     );
 
     const refreshToken = jwt.sign(
@@ -190,7 +191,7 @@ const refreshHandler = async (req, res) => {
 
       const accessToken = jwt.sign({ userId: foundUser._id, email: foundUser.email },
         process.env.JWT_ENCRYPTION_TOKEN,
-        { expiresIn: "5s" }
+        { expiresIn: ACCESS_TOKEN_EXPIRY }
       );
 
       console.log(accessToken)

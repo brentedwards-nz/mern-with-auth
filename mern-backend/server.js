@@ -14,9 +14,11 @@ const dataRoutes = require("./src/routes/dataRoutes");
 const app = express();
 app.use(express.json());
 app.use(cors({
-  origin: 'http://localhost:3000',
-  credentials: true
+  origin: ["http://localhost:3000", "https://mern-with-auth-frontend.onrender.com"],
+  credentials: true,
+  methods: ['GET', 'POST', 'OPTIONS']
 }));
+
 app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 app.use("/api/test", testRoutes);
