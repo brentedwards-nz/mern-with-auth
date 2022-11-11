@@ -102,3 +102,14 @@ dist
 
 # TernJS port file
 .tern-port
+mern-frontend/build/asset-manifest.json
+mern-frontend/build/index.html
+mern-frontend/build/manifest.json
+mern-frontend/build/robots.txt
+mern-frontend/build/static/css/main.e6c13ad2.css
+mern-frontend/build/static/css/main.e6c13ad2.css.map
+mern-frontend/build/static/js/787.81b68e3e.chunk.js
+mern-frontend/build/static/js/787.81b68e3e.chunk.js.map
+mern-frontend/build/static/js/main.6210a0b7.js
+mern-frontend/build/static/js/main.6210a0b7.js.LICENSE.txt
+mern-frontend/build/static/js/main.6210a0b7.js.map
