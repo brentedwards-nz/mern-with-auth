@@ -11,6 +11,7 @@ import Typography from '@mui/material/Typography';
 import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
+import { Link } from '@mui/material'
 
 import * as styles from '../../styles/styles.module';
 import spotify from '../../assets/spotify.png';
@@ -40,7 +41,7 @@ const Tracks = () => {
         </Typography>
       )
     }
-    else if(!isLoading && (tracks === null)) {
+    else if (!isLoading && (tracks === null)) {
       t.push(
         <Typography key={1} style={styles.authMessage}>
           Empty...
@@ -94,8 +95,13 @@ const Tracks = () => {
   return (
     <Container>
       {displayedTracks}
-      <Typography hidden={isLoading && downloadError} style={styles.authError}>
+      <Typography hidden={!downloadError && !isLoading} style={styles.authError}>
         Error: {downloadError}
+      </Typography>
+      <Typography>
+        <Link href="/logout" underline="hover" style={styles.linkStyle}>
+          Log out
+        </Link>
       </Typography>
     </Container>
   )
