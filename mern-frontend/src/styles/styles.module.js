@@ -17,7 +17,7 @@ const linkStyle = {
 
 const paperStyle = {
   padding: 20,
-  height: '50vh',
+  height: '45vh',
   width: 280,
   margin: "40px AUTO"
 }
