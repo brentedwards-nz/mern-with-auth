@@ -1,11 +1,5 @@
 import axios from "axios";
 
-// export const apiClient = axios.create({
-//   baseURL: process.env.REACT_APP_BACKEND_API_URL,
-//   timeout: process.env.REACT_APP_BACKEND_API_DEFAULT_TIMEOUT_MS,
-//   withCredentials: true
-// });
-
 export const apiClientPrivate = axios.create({
   baseURL: process.env.REACT_APP_BACKEND_API_URL,
   timeout: process.env.REACT_APP_BACKEND_API_DEFAULT_TIMEOUT_MS,
@@ -15,6 +9,7 @@ export const apiClientPrivate = axios.create({
   withCredentials: true
 });
 
+// Axios interceptors
 apiClientPrivate.interceptors.request.use(
   (config) => {
     if (config.baseURL === undefined) {
@@ -23,8 +18,7 @@ apiClientPrivate.interceptors.request.use(
     }
 
     const userDetails = localStorage.getItem("userDetails");
-
-    if (userDetails) {
+    if (!config.headers.Authorization && userDetails) {
       const token = JSON.parse(userDetails).token;
       config.headers.Authorization = `Bearer ${token}`;
     }

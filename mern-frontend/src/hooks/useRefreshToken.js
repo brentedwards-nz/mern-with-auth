@@ -5,10 +5,12 @@ const useRefreshToken = () => {
     const [userDetails, setUserDetails] = useUserDetails();
 
     const refresh = async () => {
+        if (!userDetails) {
+            return "User not logged";
+        }
+
         try {
-            const response = await apiClientPrivate.get('/auth/refresh', {
-                withCredentials: true
-            });
+            const response = await apiClientPrivate.get('/auth/refresh');
             setUserDetails(prev => {
                 return {
                     ...prev,
@@ -19,7 +21,8 @@ const useRefreshToken = () => {
             return response.data.accessToken;
         }
         catch (err) {
-            console.log(err);
+            console.table(err);
+            return "Could not refresh access token";
         }
     }
     return refresh;

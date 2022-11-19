@@ -1,6 +1,4 @@
 import { useCallback, useEffect, useState } from 'react'
-//import { apiClientPrivate } from '../services/api';
-
 import useAxiosPrivate from './useAxiosPrivate';
 
 const useAxios = (request) => {
@@ -13,7 +11,7 @@ const useAxios = (request) => {
   } = request;
 
   const config = useCallback(() => {
-    return requestConfig
+    return requestConfig ? requestConfig : undefined;
   }, [requestConfig]);
 
   const [data, setData] = useState(null);
@@ -25,19 +23,17 @@ const useAxios = (request) => {
 
   useEffect(() => {
     const controller = new AbortController();
-
     const requestData = async () => {
       setisLoading(true);
       try {
-
         const response = await apiClientPrivate[method.toLowerCase()](url, {
-          ...config(),
-          //signal: controller.signal
-        })
-        console.table(response.data)
-        setData(response.data)
+          signal: controller.signal
+        });
+        setData(response.data);
       } catch (error) {
-        setError(error.message);
+        if (error?.code !== "ERR_CANCELED") {
+          setError(error.message);
+        }
       } finally {
         setisLoading(false);
       }
@@ -46,7 +42,7 @@ const useAxios = (request) => {
 
     return () => controller.abort();
 
-  }, [reload, method, url, config])
+  }, [reload, method, url, config, apiClientPrivate])
 
   return [isLoading, error, data, refetch];
 }

@@ -99,6 +99,11 @@ const Tracks = () => {
         Error: {downloadError}
       </Typography>
       <Typography>
+        <Link href="/protected/tracks" underline="hover" style={styles.linkStyle}>
+          Refresh
+        </Link>
+      </Typography>
+      <Typography>
         <Link href="/logout" underline="hover" style={styles.linkStyle}>
           Log out
         </Link>

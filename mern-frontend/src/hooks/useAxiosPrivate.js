@@ -8,29 +8,32 @@ const useAxiosPrivate = () => {
     const { userDetails } = useUserDetails();
 
     useEffect(() => {
-        console.table(userDetails);
-    }, [userDetails]) 
-
-    useEffect(() => {
-
         const requestIntercept = apiClientPrivate.interceptors.request.use(
-            config => {
-                if (!config.headers['Authorization']) {
-                    config.headers['Authorization'] = `Bearer ${userDetails?.accessToken}`;
+            (config) => {
+                if (!config.headers.Authorization && userDetails?.token !== undefined) {
+                    const bearerHeader = `Bearer ${userDetails?.token}`;
+                    config.headers.Authorization = bearerHeader;
                 }
                 return config;
-            }, (error) => Promise.reject(error)
+            },
+            (error) => {
+                Promise.reject(error)
+            }
         );
 
         const responseIntercept = apiClientPrivate.interceptors.response.use(
-            response => response,
+            (response) => {
+                return response;
+            },
             async (error) => {
                 const prevRequest = error?.config;
                 if (error?.response?.status === 401 && !prevRequest?.sent) {
-                    prevRequest.sent = true;
                     const newAccessToken = await refresh();
-                    prevRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
-                    return apiClientPrivate(prevRequest);
+                    return apiClientPrivate({
+                        ...prevRequest,
+                        headers: { ...prevRequest.headers, Authorization: `Bearer ${newAccessToken}` },
+                        sent: true
+                    });
                 }
                 return Promise.reject(error);
             }
