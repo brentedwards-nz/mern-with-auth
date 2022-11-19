@@ -6,7 +6,8 @@ const ResetToken = require("../../models/resetTokenModel");
 const Email = require("../../services/email");
 
 const jwtCookieName = "jwt";
-const ACCESS_TOKEN_EXPIRY = "1h";
+const ACCESS_TOKEN_EXPIRY = "5s";
+const REFRESH_TOKEN_EXPIRY = "1d";
 
 const registerHandler = async (req, res) => {
   try {
@@ -40,7 +41,7 @@ const registerHandler = async (req, res) => {
     const refreshToken = jwt.sign(
       { userId: user._id },
       process.env.JWT_ENCRYPTION_REFRESH_TOKEN,
-      { expiresIn: "1d" }
+      { expiresIn: REFRESH_TOKEN_EXPIRY }
     );
 
     res.cookie(jwtCookieName, refreshToken, {
@@ -96,7 +97,7 @@ const loginHandler = async (req, res) => {
     const refreshToken = jwt.sign(
       { userId: user._id },
       process.env.JWT_ENCRYPTION_REFRESH_TOKEN,
-      { expiresIn: "1d" }
+      { expiresIn: REFRESH_TOKEN_EXPIRY }
     );
 
     res.cookie(jwtCookieName, refreshToken, {
@@ -133,7 +134,7 @@ const resetHandler = async (req, res) => {
 
     const token = jwt.sign({ userId: user._id, email },
       process.env.JWT_ENCRYPTION_RESET_TOKEN,
-      { expiresIn: "1h" }
+      { expiresIn: REFRESH_TOKEN_EXPIRY }
     );
 
     let resetToken = await ResetToken.findOne({ userId: user._id });
@@ -172,29 +173,33 @@ const logoutHandler = async (req, res) => {
 };
 
 const refreshHandler = async (req, res) => {
+  console.log('Refresh handler...')
   const cookies = req.cookies;
 
   if (!cookies?.jwt) return res.sendStatus(401);
   const refreshToken = cookies.jwt;
 
-  const foundUser = await User.findOne({ refreshToken }).exec();
-  if (!foundUser) return res.sendStatus(403); //Forbidden 
+  const foundToken = await User.findOne({ refreshToken }).exec();
+  if (!foundToken) {
+    console.log('Refresh handler: Invalid refresh token')
+    return res.sendStatus(403);
+  }
 
-  console.log(foundUser);
-
-  // evaluate jwt 
   jwt.verify(
     refreshToken,
     process.env.JWT_ENCRYPTION_REFRESH_TOKEN,
     (err, decoded) => {
-      if (err || foundUser.username !== decoded.username) return res.sendStatus(403);
+      if (err || foundToken.username !== decoded.username) {
+        console.log('Refresh handler: User mismatch')
+        return res.sendStatus(403);
+      }
 
-      const accessToken = jwt.sign({ userId: foundUser._id, email: foundUser.email },
+      const accessToken = jwt.sign({ userId: foundToken._id, email: foundToken.email },
         process.env.JWT_ENCRYPTION_TOKEN,
         { expiresIn: ACCESS_TOKEN_EXPIRY }
       );
 
-      console.log(accessToken)
+      console.log('Refresh handler: Returning new access token')
       res.json({ accessToken })
     }
   );
@@ -231,7 +236,6 @@ const verifyResetTokenHandler = async (req, res) => {
 
 const resetPasswordHandler = async (req, res) => {
   try {
-    console.log("*** Reset Password Handler ***")
     const { token, password } = req.body;
     const { userId, email } = jwt.verify(token, process.env.JWT_ENCRYPTION_RESET_TOKEN);
 
