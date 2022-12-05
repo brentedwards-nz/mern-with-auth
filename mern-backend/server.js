@@ -9,6 +9,7 @@ require("dotenv").config();
 const authRoutes = require("./src/routes/authRoutes");
 const testRoutes = require("./src/routes/testRoutes");
 const dataRoutes = require("./src/routes/dataRoutes");
+const spotifyRoutes = require("./src/routes/spotifyRoutes");
 
 // Server
 const app = express();
@@ -23,6 +24,7 @@ app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 app.use("/api/test", testRoutes);
 app.use("/api/data", dataRoutes);
+app.use("/api/spotify", spotifyRoutes)
 const server = http.createServer(app);
 
 // Mongoose

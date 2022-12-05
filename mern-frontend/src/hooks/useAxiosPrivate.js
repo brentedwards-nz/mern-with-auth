@@ -28,20 +28,27 @@ const useAxiosPrivate = () => {
             async (error) => {
                 const prevRequest = error?.config;
                 if (error?.response?.status === 401 && !prevRequest?.sent) {
-                    const newAccessToken = await refresh();
-                    return apiClientPrivate({
-                        ...prevRequest,
-                        headers: { ...prevRequest.headers, Authorization: `Bearer ${newAccessToken}` },
-                        sent: true
-                    });
+                    const result = await refresh();
+                    if (result.status === true) {
+                        const newAccessToken = result?.token;
+                        return apiClientPrivate({
+                            ...prevRequest,
+                            headers: { ...prevRequest.headers, Authorization: `Bearer ${newAccessToken}` },
+                            sent: true
+                        });
+                    }
+                    else {
+                        return Promise.reject(result.message);
+                    }
+
                 }
                 return Promise.reject(error);
             }
         );
 
         return () => {
-          apiClientPrivate.interceptors.request.eject(requestIntercept);
-          apiClientPrivate.interceptors.response.eject(responseIntercept);
+            apiClientPrivate.interceptors.request.eject(requestIntercept);
+            apiClientPrivate.interceptors.response.eject(responseIntercept);
         }
     }, [userDetails, refresh])
 

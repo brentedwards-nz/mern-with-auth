@@ -6,7 +6,7 @@ const useRefreshToken = () => {
 
     const refresh = async () => {
         if (!userDetails) {
-            return "User not logged";
+            return { status: false, message: "User not logged in" };
         }
 
         try {
@@ -18,13 +18,14 @@ const useRefreshToken = () => {
                     token: response.data.accessToken
                 }
             });
-            return response.data.accessToken;
+            return { status: true, token: response.data.accessToken };
         }
         catch (err) {
             console.table(err);
-            return "Could not refresh access token";
+            return { status: false, message: "Could not refresh access token" };
         }
     }
+
     return refresh;
 };
 
