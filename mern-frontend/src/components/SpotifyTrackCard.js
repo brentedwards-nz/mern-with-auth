@@ -38,7 +38,7 @@ const SpotifyTrackCard = (props) => {
       </Box>
       <CardMedia
         component="img"
-        sx={{ width: 150, width: 150 }}
+        sx={{ width: 150, height: 150 }}
         image={props.image}
         alt={props.head}
       />

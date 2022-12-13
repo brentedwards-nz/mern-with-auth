@@ -1,9 +1,26 @@
 import { Outlet } from "react-router-dom"
+import { Grid } from "@mui/material"
+import Footer from "./Footer"
+import Header from "./Header"
 
 const Layout = () => {
   return (
     <main className="App">
-      <Outlet/>
+      <Grid container
+        direction="column"
+        alignItems="center"
+        justifyContent="center"
+        marginTop="64px"
+        paddingRight="20px"
+        paddingLeft="20px"
+        marginLeft="auto"
+        marginRight="auto"
+        maxWidth="1200px"
+      >
+        <Header />
+        <Outlet />
+        <Footer />
+      </Grid>
     </main>
   )
 }

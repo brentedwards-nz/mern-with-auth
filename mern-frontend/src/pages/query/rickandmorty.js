@@ -9,7 +9,6 @@ const RickAndMorty = () => {
   const [page, setPage] = useState(1);
 
   const fetchRickAndMorty = async ({ queryKey }) => {
-    console.log(queryKey)
     const response = await fetch(`https://rickandmortyapi.com/api/character?page=${queryKey[1]}`);
     return response.json();
   };

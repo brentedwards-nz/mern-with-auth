@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { useEffect, useState } from 'react';
-import { Grid, Avatar, InputAdornment, TextField, Typography, MenuItem, getCardActionsUtilityClass } from '@mui/material'
+import { Grid, Avatar, InputAdornment, TextField, Typography, MenuItem } from '@mui/material'
 import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
 
@@ -53,7 +53,7 @@ const Local = () => {
     else {
       setItems([]);
     }
-  }, [data])
+  }, [data, searchField])
 
   const handleSearchQueryChange = (event, child) => {
     setSearchQuery(event.target.value);
