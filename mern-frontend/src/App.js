@@ -20,6 +20,8 @@ import RequireAuth from './components/RequireAuth';
 import Home from './pages/home/Home'
 import Protected from './pages/protected/Protected'
 import Tracks from './pages/protected/Tracks'
+import Chat from './pages/chat/Chat'
+import VideoChat from './pages/chat/VideoChat'
 import RickAndMorty from './pages/query/rickandmorty';
 
 import Missing from './pages/missing/Missing';
@@ -52,6 +54,10 @@ function App() {
             <Route element={<RequireAuth />}>
               <Route exact path='spotify/local' element={<SpotifyLocal />} />
               <Route exact path='home' element={<Home />} />
+              <Route exact path='chat'>
+                <Route path='' element={<Chat />} />
+                <Route exact path='video' element={<VideoChat />} />
+              </Route>
               <Route exact path='protected'>
                 <Route path='' element={<Protected />} />
                 <Route path='tracks' element={<Tracks />} />

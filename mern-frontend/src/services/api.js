@@ -1,5 +1,58 @@
 import axios from "axios";
 
+export const axiosClient = axios.create({
+  baseURL: process.env.REACT_APP_BACKEND_API_URL,
+  timeout: process.env.REACT_APP_BACKEND_API_DEFAULT_TIMEOUT_MS,
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  withCredentials: true
+});
+
+axiosClient.interceptors.request.use(
+  (config) => {
+    if (config.baseURL === undefined) {
+      console.log("Server not set in api client")
+      return Promise.reject("Server not available");
+    }
+
+    const userDetails = localStorage.getItem("userDetails");
+    if (!config.headers.Authorization && userDetails) {
+      const token = JSON.parse(userDetails).token;
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return config;
+  },
+  (err) => {
+    return Promise.reject(err);
+  }
+);
+
+axiosClient.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  async (error) => {
+    const prevRequest = error?.config;
+    if (error?.response?.status === 401 && !prevRequest?.sent) {
+      const response = await axiosClient.get('/auth/refresh');
+      if (response.status === 200) {
+        const newAccessToken = response.data.accessToken;
+        return axiosClient({
+          ...prevRequest,
+          headers: { ...prevRequest.headers, Authorization: `Bearer ${newAccessToken}` },
+          sent: true
+        });
+      }
+      else {
+        return Promise.reject(response.message);
+      }
+
+    }
+    return Promise.reject(error);
+  })
+
 export const apiClientPrivate = axios.create({
   baseURL: process.env.REACT_APP_BACKEND_API_URL,
   timeout: process.env.REACT_APP_BACKEND_API_DEFAULT_TIMEOUT_MS,
@@ -9,7 +62,6 @@ export const apiClientPrivate = axios.create({
   withCredentials: true
 });
 
-// Axios interceptors
 apiClientPrivate.interceptors.request.use(
   (config) => {
     if (config.baseURL === undefined) {

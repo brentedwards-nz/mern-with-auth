@@ -7,6 +7,7 @@ const refreshHandler = auth.refreshHandler;
 const resetHandler = auth.resetHandler;
 const verifyResetTokenHandler = auth.verifyResetTokenHandler;
 const resetPasswordHandler = auth.resetPasswordHandler;
+const usersHandler = auth.usersHandlerHandler;
 
 exports.controllers = {
   registerHandler,
@@ -15,5 +16,6 @@ exports.controllers = {
   refreshHandler,
   resetHandler,
   verifyResetTokenHandler,
-  resetPasswordHandler
+  resetPasswordHandler,
+  usersHandler
 };

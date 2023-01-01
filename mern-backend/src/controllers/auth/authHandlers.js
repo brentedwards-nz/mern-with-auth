@@ -6,7 +6,7 @@ const ResetToken = require("../../models/resetTokenModel");
 const Email = require("../../services/email");
 
 const jwtCookieName = "jwt";
-const ACCESS_TOKEN_EXPIRY = "5s";
+const ACCESS_TOKEN_EXPIRY = "30s";
 const REFRESH_TOKEN_EXPIRY = "1d";
 
 const registerHandler = async (req, res) => {
@@ -270,6 +270,19 @@ const resetPasswordHandler = async (req, res) => {
   }
 };
 
+const usersHandlerHandler = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const users = await User
+      .find({ _id: { $ne: userId }, isCurrent: true })
+      .select({ firstName: 1, secondName: 1, email: 1 });
+    return res.status(200).send(users);
+  } catch (err) {
+    console.log(`Error occured. Please try again: ${err}`)
+    return res.status(500).send("Error occured. Please try again");
+  }
+};
+
 module.exports = {
   registerHandler,
   loginHandler,
@@ -277,5 +290,6 @@ module.exports = {
   logoutHandler,
   resetHandler,
   verifyResetTokenHandler,
-  resetPasswordHandler
+  resetPasswordHandler,
+  usersHandlerHandler
 };

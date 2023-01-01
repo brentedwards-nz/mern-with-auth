@@ -66,6 +66,20 @@ const resetPage = {
   }
 }
 
+const showOutline = {
+  outline: "#000000 solid 1px"
+};
+
+const showBackGround = {
+  opacity: 0.3,
+  backgroundColor: "#00ffff"
+};
+
+const showHightLight = {
+  outline: "#000000 solid 1px",
+  opacity: 0.3,
+  backgroundColor: "#ff0000"
+};
 
 export {
   authError,
@@ -79,5 +93,8 @@ export {
   protectedPage,
   unauthorisedPage,
   resetPage,
-  paperStyle
+  paperStyle,
+  showBackGround,
+  showOutline,
+  showHightLight
 }

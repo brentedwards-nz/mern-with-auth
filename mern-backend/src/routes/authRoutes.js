@@ -79,4 +79,11 @@ router.post(
   authController.controllers.logoutHandler
 );
 
+router.get(
+  "/users",
+  authMiddleware,
+  authController.controllers.usersHandler
+);
+
+
 module.exports = router;

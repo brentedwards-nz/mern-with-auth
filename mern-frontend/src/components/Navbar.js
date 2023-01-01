@@ -22,7 +22,9 @@ const navItems = [
   { label: 'Home', to: "/" },
   { label: 'Protected', to: "/protected" },
   { label: 'Spotify', to: "/spotify/local" },
-  { label: 'Rick & Morty', to: "rm" }
+  { label: 'Rick & Morty', to: "rm" },
+  { label: 'Chat', to: "chat" },
+  { label: 'Video Chat', to: "chat/video" },
 ];
 
 const NavBar = (props) => {
@@ -33,7 +35,6 @@ const NavBar = (props) => {
   const [userDetails] = useUserDetails();
 
   useEffect(() => {
-    console.table(userDetails)
     setIsLoggedIn(userDetails?.isLoggedIn);
   }, [userDetails])
 
@@ -99,9 +100,7 @@ const NavBar = (props) => {
           variant="temporary"
           open={mobileOpen}
           onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
-          }}
+          ModalProps={{ keepMounted: true }}
           sx={{
             display: { xs: 'block', sm: 'none' },
             '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },

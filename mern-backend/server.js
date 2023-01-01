@@ -10,6 +10,7 @@ const authRoutes = require("./src/routes/authRoutes");
 const testRoutes = require("./src/routes/testRoutes");
 const dataRoutes = require("./src/routes/dataRoutes");
 const spotifyRoutes = require("./src/routes/spotifyRoutes");
+const chatroomRoutes = require("./src/routes/chatroomRoutes");
 
 // Server
 const app = express();
@@ -25,6 +26,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/test", testRoutes);
 app.use("/api/data", dataRoutes);
 app.use("/api/spotify", spotifyRoutes)
+app.use("/api/chatroom", chatroomRoutes)
 const server = http.createServer(app);
 
 // Mongoose
