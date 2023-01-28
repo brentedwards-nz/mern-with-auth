@@ -61,11 +61,13 @@ const VideoChat = () => {
     const peer = new Peer({ 
       initiator: true,
       trickle: false,
-      localStream: localStream
+      stream: localStream
     });
 
     peer.on('signal', (signalData) => {
       logEvent(`makeCall: received peer.signal`)
+
+
       socket.emit('call.connect', { 
         remoteSocketId: remoteSocketId, 
         signalData: signalData, 
@@ -183,7 +185,7 @@ const VideoChat = () => {
 
       <Grid item xs={12} textAlign="center">
         <Typography visibility={"hidden"}>Local Socket Id: {localSocketId}</Typography>
-        {formatEvents()}
+        {false && formatEvents()}
       </Grid>
     </Grid>
   )
