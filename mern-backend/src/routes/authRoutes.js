@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Joi = require("joi");
 const validator = require("express-joi-validation").createValidator({});
-const authController = require('../controllers/auth/authController');
+const authHandlers = require('../handlers/auth/authHandlers');
 const authMiddleware = require('../middleware/authMiddleware');
 
 const passwordSchema = Joi.string().min(6).max(30).required();
@@ -41,48 +41,48 @@ const resetPasswordSchema = Joi.object({
 router.post(
   "/register",
   validator.body(registerSchema),
-  authController.controllers.registerHandler
+  authHandlers.registerHandler
 );
 
 router.post(
   "/login",
   validator.body(loginSchema),
-  authController.controllers.loginHandler
+  authHandlers.loginHandler
 );
 
 router.post(
   "/reset",
   validator.body(resetSchema),
-  authController.controllers.resetHandler
+  authHandlers.resetHandler
 );
 
 router.post(
   "/verifyresettoken",
   validator.body(verifyResetTokenSchema),
-  authController.controllers.verifyResetTokenHandler
+  authHandlers.verifyResetTokenHandler
 );
 
 router.post(
   "/resetpassword",
   validator.body(resetPasswordSchema),
-  authController.controllers.resetPasswordHandler
+  authHandlers.resetPasswordHandler
 );
 
 router.get(
   "/refresh",
-  authController.controllers.refreshHandler
+  authHandlers.refreshHandler
 );
 
 router.post(
   "/logout",
   validator.body(refreshSchema),
-  authController.controllers.logoutHandler
+  authHandlers.logoutHandler
 );
 
 router.get(
   "/users",
   authMiddleware,
-  authController.controllers.usersHandler
+  authHandlers.usersHandler
 );
 
 

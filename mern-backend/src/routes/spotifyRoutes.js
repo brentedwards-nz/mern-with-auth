@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const handlers = require('../controllers/spotify/spotifyHandlers');
+const handlers = require('../handlers/spotify/spotifyHandlers');
 const authMiddleware = require('../middleware/authMiddleware');
 
 let querystring = require('querystring')

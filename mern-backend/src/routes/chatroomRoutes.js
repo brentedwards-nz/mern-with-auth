@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const handlers = require('../controllers/chatroom/chatroomHandlers');
+const handlers = require('../handlers/chatroom/chatroomHandlers');
 const authMiddleware = require('../middleware/authMiddleware');
 
 const Joi = require("joi");

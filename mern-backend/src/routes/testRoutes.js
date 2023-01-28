@@ -1,12 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const testController = require('../controllers/test/testController');
+const testHandlers = require('../handlers/test/testHandlers');
 const authMiddleware = require('../middleware/authMiddleware');
 
 router.get(
   "/test",
   authMiddleware,
-  testController.controllers.testHandler
+  testHandlers.testHandler
 );
 
 module.exports = router;

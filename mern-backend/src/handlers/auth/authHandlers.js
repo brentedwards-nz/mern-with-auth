@@ -270,7 +270,7 @@ const resetPasswordHandler = async (req, res) => {
   }
 };
 
-const usersHandlerHandler = async (req, res) => {
+const usersHandler = async (req, res) => {
   try {
     const userId = req.user.userId;
     const users = await User
@@ -291,5 +291,5 @@ module.exports = {
   resetHandler,
   verifyResetTokenHandler,
   resetPasswordHandler,
-  usersHandlerHandler
+  usersHandler
 };

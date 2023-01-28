@@ -6,4 +6,6 @@ const testHandler = async (req, res) => {
   });
 };
 
-module.exports = testHandler;
+module.exports = {
+  testHandler,
+};
