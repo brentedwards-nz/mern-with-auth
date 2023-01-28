@@ -13,16 +13,25 @@ app.use(cors());
 
 const PORT = process.env.PORT || 5500;
 
+let onlineUsers = new Map();
+
 app.get('/', (req, res) => {
 	res.send('Running');
 });
 
 io.on("connection", (socket) => {
-	console.log(`io.connection: ${socket.id}`);
 	socket.emit("socket.created", socket.id);
+
+	socket.on("register", ({socketID, userName}) => {
+		console.log(`Register: ${socketID}`)
+		onlineUsers.set(socketID, userName);
+		console.table(onlineUsers);
+	});
 
 	socket.on("disconnect", () => {
 		socket.broadcast.emit("callEnded")
+		onlineUsers.delete(socket.id);
+		console.table(onlineUsers);
 	});
 
 	socket.on("call.connect", ({ 
@@ -31,8 +40,6 @@ io.on("connection", (socket) => {
 		originSocketId,
 		originName,
 	}) => {
-		console.log(`call.connect origin: ${originSocketId}`);
-		console.log(`call.connect remote: ${remoteSocketId}`);
 		io.to(remoteSocketId).emit("call.incoming", { 
 			signalData, 
 			originSocketId, 
@@ -41,7 +48,6 @@ io.on("connection", (socket) => {
 	});
 
 	socket.on("call.answer", ({signalData, remoteSocketId}) => {
-		console.log(`*** call.answer: ${remoteSocketId}`);
 		io.to(remoteSocketId).emit("call.accepted", signalData)
 	});
 });

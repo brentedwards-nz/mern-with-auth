@@ -29,6 +29,13 @@ app.use("/api/spotify", spotifyRoutes)
 app.use("/api/chatroom", chatroomRoutes)
 const server = http.createServer(app);
 
+const io = require("socket.io")(server, {
+	cors: {
+		origin: "*",
+		methods: ["GET", "POST"]
+	}
+});
+
 // Mongoose
 const PORT = process.env.PORT || process.env.API_PORT;
 mongoose
@@ -42,3 +49,39 @@ mongoose
     console.log("database connection failed. Server not started");
     console.error(err);
   });
+
+  let onlineUsers = new Map();
+
+app.get('/', (req, res) => {
+	res.send('Running');
+});
+
+io.on("connection", (socket) => {
+	socket.emit("socket.created", socket.id);
+
+	socket.on("register", ({socketID, userName}) => {
+		onlineUsers.set(socketID, userName);
+	});
+
+	socket.on("disconnect", () => {
+		socket.broadcast.emit("callEnded")
+		onlineUsers.delete(socket.id);
+	});
+
+	socket.on("call.connect", ({ 
+		remoteSocketId,
+		signalData,
+		originSocketId,
+		originName,
+	}) => {
+		io.to(remoteSocketId).emit("call.incoming", { 
+			signalData, 
+			originSocketId, 
+			originName, 
+		});
+	});
+
+	socket.on("call.answer", ({signalData, remoteSocketId}) => {
+		io.to(remoteSocketId).emit("call.accepted", signalData)
+	});
+});
