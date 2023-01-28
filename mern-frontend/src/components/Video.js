@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 
-const VIDEO_SIZE = 100;
+const VIDEO_SIZE = 50;
 const WIDTH = 4 * VIDEO_SIZE;
 const HEIGHT = 3 * VIDEO_SIZE;
 
@@ -19,12 +19,14 @@ const videoStyle = {
 const Video = ({ stream }) => {
   const myVideo = useRef();
   useEffect(() => {
-    // setVideoStream(currentStream);
+    console.log("*** Video:")
+    console.table(stream);
+    
     myVideo.current.srcObject = stream;
   }, [stream])
 
   return (
-    <video width="400px" playsInline muted ref={myVideo} autoPlay />
+    <video width="150px" playsInline muted ref={myVideo} autoPlay />
   )
 }
 export default Video;

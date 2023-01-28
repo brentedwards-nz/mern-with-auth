@@ -51,6 +51,8 @@ function App() {
             <Route exact path='spotify/auth' element={<SpotifyAuth />} />
             <Route exact path='spotify/remote' element={<SpotifyRemote />} />
 
+            <Route exact path='video' element={<VideoChat />} />
+
             <Route element={<RequireAuth />}>
               <Route exact path='spotify/local' element={<SpotifyLocal />} />
               <Route exact path='home' element={<Home />} />
