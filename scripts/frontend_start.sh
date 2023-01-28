@@ -1,6 +1,6 @@
 #!/bin/bash
 clear
-pushd ../mern-frontend
+pushd ~/Projects/mern-with-auth/mern-frontend
 PID=$(ps -la | grep node | grep mern-frontend | head -1 | awk '{print $2}')
 echo 'PID: ' $PID
 kill -9 $PID
