@@ -18,19 +18,31 @@ app.get('/', (req, res) => {
 });
 
 io.on("connection", (socket) => {
-	socket.emit("socketId", socket.id);
+	console.log(`io.connection: ${socket.id}`);
+	socket.emit("socket.created", socket.id);
 
 	socket.on("disconnect", () => {
 		socket.broadcast.emit("callEnded")
 	});
 
-	socket.on("callUser", ({ userToCall, signalData, from, name }) => {
-		console.log(`*** callUser: ${userToCall}`);
-		io.to(userToCall).emit("callUser", { signal: signalData, from, name });
+	socket.on("call.connect", ({ 
+		remoteSocketId,
+		signalData,
+		originSocketId,
+		originName,
+	}) => {
+		console.log(`call.connect origin: ${originSocketId}`);
+		console.log(`call.connect remote: ${remoteSocketId}`);
+		io.to(remoteSocketId).emit("call.incoming", { 
+			signalData, 
+			originSocketId, 
+			originName, 
+		});
 	});
 
-	socket.on("answerCall", (data) => {
-		io.to(data.to).emit("callAccepted", data.signal)
+	socket.on("call.answer", ({signalData, remoteSocketId}) => {
+		console.log(`*** call.answer: ${remoteSocketId}`);
+		io.to(remoteSocketId).emit("call.accepted", signalData)
 	});
 });
 
