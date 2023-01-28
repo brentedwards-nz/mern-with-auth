@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="#">
+  <link rel="stylesheet" href="index.css">
+  <title>Video Chat</title>
+</head>
+<body>
+  <noscript>You need to enable JavaScript to run this app.</noscript>
+  <div class="container">
+    <h1>Video Chat</h1>
+    <div id="video">
+      <span id="local-video"><video id="local-video-src" width="100%" playsInline muted autoPlay></video></span>
+      <span id="remote-video"><video id="remote-video-src" width="100%" playsInline muted autoPlay></video></span>
+    </div>
+    <h2 id="socket-id">Socket:</h2>
+    <div>
+        <button id="call-button">Call</button>
+        <input id="remote-number" type="text"/>
+        <button id="answer-button">Answer</button>
+        <button id="hangup-button">Hang Up</button>
+    </div>
+  </div>
+  
+</body>
+<script src="./scripts/simple-peer/simplepeer.min.js"></script>
+<script src="./scripts/socket.io/socket.io.min.js"></script>
+<script type="text/javascript" src="index.js" defer></script>
+</html>
