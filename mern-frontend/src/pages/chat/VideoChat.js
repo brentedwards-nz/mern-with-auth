@@ -4,7 +4,7 @@ import Video from "../../components/Video"
 import { io } from 'socket.io-client';
 import Peer from 'simple-peer';
 
-const socket = io('http://localhost:5500');
+const socket = io(process.env.REACT_APP_BACKEND_SOCKETIO_URI);
 
 const VideoChat = () => {
   const [events, setEvents] = useState([])
@@ -25,13 +25,30 @@ const VideoChat = () => {
   const [remoteName, setRemoteName] = useState('Guest');
 
   const [call, setCall] = useState({});
-  const [callWasAccepted, setCallWasAccepted] = useState(false);
+  const [callAccepted, setCallAccepted] = useState(false);
 
   socket.on('socket.created', (socketId) => {
       logEvent(`Created local socket id: ${socketId}`)
       setLocalSocketId(socketId);
+
+      if(localSocketId.length > 0)
+      {
+        socket.emit('register', { 
+          socketID: localSocketId, 
+          userName: localName 
+        });
+      }
     }
   );
+
+  useEffect(() => {
+    if(localSocketId.length > 0) {
+        socket.emit('register', { 
+          socketID: localSocketId, 
+          userName: localName 
+        });
+    };
+  }, [localName])
 
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ video: true, audio: true })
@@ -66,39 +83,31 @@ const VideoChat = () => {
 
     peer.on('signal', (signalData) => {
       logEvent(`makeCall: received peer.signal`)
-
-
       socket.emit('call.connect', { 
         remoteSocketId: remoteSocketId, 
         signalData: signalData, 
         originSocketId: localSocketId, 
         originName: localName 
       });
-      //setRemoteStream(localStream)
     });
 
     peer.on('stream', (remoteStream) => {
       logEvent(`makeCall: received peer.stream`)
       setRemoteStream(remoteStream)
-      console.table(remoteStream)
-      //userVideo.current.srcObject = currentStream;
+      setCallAccepted(true);
     });
 
     socket.on('call.accepted', (signalData) => {
       logEvent(`received call.accepted`)
-      //setCallAccepted(true);
       peer.signal(signalData);
     });
-
-    //connectionRef.current = peer;
-
   }
 
   const acceptCall = () => {
     logEvent('Accept call..')
     logEvent(`Origin Socket Id: ${call.originSocketId}`)
 
-    setCallWasAccepted(true);
+    setCallAccepted(true);
 
     var peer = new Peer({
       initiator: false,
@@ -119,30 +128,23 @@ const VideoChat = () => {
       });
     });
 
-    // peer.on('signal', (signalData) => {
-    //   logEvent(`acceptCall: from ${call.originSocketId}`);
-    //   socket.emit('call.answer', { 
-    //     signalData: signalData, 
-    //     remoteSocketId: call.originSocketId 
-    //   });
-    // });
-
     peer.on('stream', (remoteStream) => {
       logEvent('acceptCall: received peer.stream');
       console.table(remoteStream)
       setRemoteStream(remoteStream);
-      //userVideo.current.srcObject = currentStream;
     });
 
     peer.signal(call.signalData);
-
-    //connectionRef.current = peer;
   }
 
   const hangUp = () => {
     logEvent(`Hang up`)
     setRemoteStream(null)
   }
+
+  const handleLocalNameChange = (event) => {
+    setLocalName(event.target.value);
+  };
 
   const handleRemoteSocketIdChange = (event, child) => {
     setRemoteSocketId(event.target.value);
@@ -173,12 +175,26 @@ const VideoChat = () => {
           onChange={handleRemoteSocketIdChange}
         />
       </Grid>
+      <Grid item xs={12} textAlign="center">
+        <TextField
+          id="localName"
+          label="User Name"
+          onChange={handleLocalNameChange}
+          defaultValue={localName}
+        />
+      </Grid>
 
       {
-        call.isReceivingCall &&
+        call.isReceivingCall && !callAccepted &&
         <Grid item xs={12} textAlign="center">
           <Typography>Call from: {remoteName}:{remoteSocketId}</Typography>
           <Button onClick={acceptCall}>Accept</Button>
+        </Grid>
+      }
+
+      {
+        callAccepted &&
+        <Grid item xs={12} textAlign="center">
           <Button onClick={hangUp}>Hang Up</Button>
         </Grid>
       }

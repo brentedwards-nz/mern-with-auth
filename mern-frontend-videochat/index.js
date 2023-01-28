@@ -20,7 +20,7 @@ let remoteSocketId = null;
 let remoteName = "Remote User";
 let remoteSignalData = null;
 
-var socket = io('http://localhost:5500');
+var socket = io('http://localhost:5020');
 
 socket.on('socket.created', (socketId) => {
   console.log(`Created local socket id: ${socketId}`);
