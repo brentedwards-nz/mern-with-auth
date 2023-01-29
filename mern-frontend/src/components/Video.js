@@ -18,10 +18,7 @@ const videoStyle = {
 
 const Video = ({ stream }) => {
   const myVideo = useRef();
-  useEffect(() => {
-    console.log("*** Video:")
-    console.table(stream);
-    
+  useEffect(() => {    
     myVideo.current.srcObject = stream;
   }, [stream])
 
