@@ -50,23 +50,41 @@ mongoose
     console.error(err);
   });
 
-  let onlineUsers = new Map();
-
-app.get('/', (req, res) => {
-	res.send('Running');
-});
-
+const onlineUsers = {};
 io.on("connection", (socket) => {
 	socket.emit("socket.created", socket.id);
 
 	socket.on("register", ({socketID, userName}) => {
-		onlineUsers.set(socketID, userName);
+		console.log(`register: current.users`);
+		console.log(`socket.id: ${socket.id}`);
+		console.log(`socketID: ${socketID}`);
+		console.log(`userName: ${userName}`);
+
+		onlineUsers[socket.id] = userName;
+		console.table(onlineUsers);
+
+		let users = [];
+		for (const key in onlineUsers) {
+			users.push({socketId: key, name: onlineUsers[key]})
+		}
+		console.table(users)	;
+		io.sockets.emit("current.users", users);
 	});
 
-	socket.on("disconnect", () => {
+  socket.on('disconnect', function(){
+    console.log('user ' + socket.id + ", " + onlineUsers[socket.id] + ' disconnected');
+		console.table(onlineUsers);
+    // remove saved socket from users object
+    delete onlineUsers[socket.id];
+		let users = [];
+		for (const key in onlineUsers) {
+			users.push({socketId: key, name: onlineUsers[key]})
+		}
+		console.table(users)	;
+		io.sockets.emit("current.users", users);
+
 		socket.broadcast.emit("callEnded")
-		onlineUsers.delete(socket.id);
-	});
+  });
 
 	socket.on("call.connect", ({ 
 		remoteSocketId,
