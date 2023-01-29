@@ -1,5 +1,5 @@
 const { model } = require("mongoose");
-const ChatRoom = require("../../models/chatRoomModel");
+const ChatRoom = require("../../models/chatroomModel");
 const User = require("../../models/userModel");
 
 const createChatRoomHandler = async (req, res) => {
