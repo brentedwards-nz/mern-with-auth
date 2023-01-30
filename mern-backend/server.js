@@ -48,41 +48,30 @@ mongoose
   .catch((err) => {
     console.log("database connection failed. Server not started");
     console.error(err);
-  });
+});
 
 const onlineUsers = {};
 io.on("connection", (socket) => {
-	socket.emit("socket.created", socket.id);
-
-	socket.on("register", ({socketID, userName}) => {
-		console.log(`register: current.users`);
-		console.log(`socket.id: ${socket.id}`);
-		console.log(`socketID: ${socketID}`);
-		console.log(`userName: ${userName}`);
-
-		onlineUsers[socket.id] = userName;
-		console.table(onlineUsers);
-
+	const updateUsers = () => {
 		let users = [];
 		for (const key in onlineUsers) {
 			users.push({socketId: key, name: onlineUsers[key]})
 		}
-		console.table(users)	;
 		io.sockets.emit("current.users", users);
+	}
+
+	socket.emit("socket.created", socket.id);
+	onlineUsers[socket.id] = 'New user';
+	updateUsers();
+
+	socket.on("register", ({socketID, userName}) => {
+		onlineUsers[socket.id] = userName;
+		updateUsers();
 	});
 
   socket.on('disconnect', function(){
-    console.log('user ' + socket.id + ", " + onlineUsers[socket.id] + ' disconnected');
-		console.table(onlineUsers);
-    // remove saved socket from users object
     delete onlineUsers[socket.id];
-		let users = [];
-		for (const key in onlineUsers) {
-			users.push({socketId: key, name: onlineUsers[key]})
-		}
-		console.table(users)	;
-		io.sockets.emit("current.users", users);
-
+		updateUsers();
 		socket.broadcast.emit("callEnded")
   });
 

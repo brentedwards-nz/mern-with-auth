@@ -1,22 +1,16 @@
 import { Button, Grid, Typography, TextField } from "@mui/material"
 import { useState, useEffect } from "react"
 import Video from "../../components/Video"
+import VideoChatUsers from "../..//components/VideoChatUsers";
 import { io } from 'socket.io-client';
 import Peer from 'simple-peer';
 import useUserDetails from "../../hooks/useUserDetails";
+
 
 const socket = io(process.env.REACT_APP_BACKEND_SOCKETIO_URL);
 
 const VideoChat = () => {
   const [userDetails, setUserDetails] = useUserDetails();
-
-  const [events, setEvents] = useState([])
-  const logEvent = (eventMsg) => {
-    console.log(eventMsg);
-    const localEvents = events;
-    localEvents.push(eventMsg);
-    setEvents(localEvents);
-  };
 
   const [localStream, setLocalStream] = useState(null);
   const [remoteStream, setRemoteStream] = useState(null);
@@ -32,27 +26,39 @@ const VideoChat = () => {
 
   const [allUsers, setAllUsers] = useState([]);
 
+  const [callState, setCallState] = useState('Idle')
+
   socket.on('socket.created', (socketId) => {
-      logEvent(`Created local socket id: ${socketId}`)
       setLocalSocketId(socketId);
     }
   );
 
   socket.on('current.users', (onlineUsers) => {
     const users = onlineUsers.filter(user => user.socketId !== localSocketId);
+
+    // const demoUsers = [
+    //   ...users,
+    //   {socketId: 'abc', name: "Billy Bob"},
+    //   {socketId: 'def', name: "Candy Cane"},
+    //   {socketId: 'hij', name: "Derek Donut"},
+    // ]
+
     setAllUsers(users);
+    //setAllUsers(demoUsers);
   });
 
   useEffect(() => {
     if(localSocketId.length > 0) {
-
-        console.log(`emit register: ${localSocketId}`)
         socket.emit('register', { 
           socketID: localSocketId, 
           userName: localName 
         });
     };
   }, [localSocketId, localName])
+
+  useEffect(() => {
+    console.log(`Call State: ${callState}`);
+  }, [callState])
 
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ video: true, audio: true })
@@ -65,7 +71,7 @@ const VideoChat = () => {
       originSocketId, 
 			originName
     }) => {
-      logEvent(`received call.incoming from: ${originSocketId}`)
+      setCallState('Ringing')
       setRemoteSocketId(originSocketId)
       setCall({ 
         isReceivingCall: true,
@@ -77,22 +83,22 @@ const VideoChat = () => {
   }, [])
 
   useEffect(() => {
-    console.table(userDetails)
-    setLocalName(userDetails.firstName);
+    setLocalName(`${userDetails.firstName} ${userDetails.secondName}`);
   }, [userDetails]);
 
   const onMakeCall = (socketId) => {
-    console.log(`onMakeCall: ${socketId}`)
     setRemoteSocketId(socketId);
-    
   }
 
   useEffect(() => {
-    makeCall();
-  }, [remoteSocketId]);
+    if(callState === "Idle" && remoteSocketId.length > 0)
+    {
+       makeCall(); 
+    }
+  }, [remoteSocketId, callState]);
 
   const makeCall = () => {
-    logEvent(`Making call: ${remoteSocketId}`)
+    setCallState('Calling')
 
     const peer = new Peer({ 
       initiator: true,
@@ -101,7 +107,6 @@ const VideoChat = () => {
     });
 
     peer.on('signal', (signalData) => {
-      logEvent(`makeCall: received peer.signal`)
       socket.emit('call.connect', { 
         remoteSocketId: remoteSocketId, 
         signalData: signalData, 
@@ -111,21 +116,17 @@ const VideoChat = () => {
     });
 
     peer.on('stream', (remoteStream) => {
-      logEvent(`makeCall: received peer.stream`)
+      setCallState('Connected')
       setRemoteStream(remoteStream)
       setCallAccepted(true);
     });
 
     socket.on('call.accepted', (signalData) => {
-      logEvent(`received call.accepted`)
       peer.signal(signalData);
     });
   }
 
   const acceptCall = () => {
-    logEvent('Accept call..')
-    logEvent(`Origin Socket Id: ${call.originSocketId}`)
-
     setCallAccepted(true);
 
     var peer = new Peer({
@@ -133,13 +134,8 @@ const VideoChat = () => {
       trickle: false,
       stream: localStream
     });
-    logEvent('Peer created...')
-
-    peer.on('error', err => logEvent(`error: ${err}`))
 
     peer.on('signal', (data) => {
-      logEvent(`acceptCall: signal received`);
-      logEvent(`acceptCall: from ${call.originSocketId}`);
       socket.emit('call.answer', { 
         signalData: data, 
         remoteSocketId: 
@@ -148,8 +144,7 @@ const VideoChat = () => {
     });
 
     peer.on('stream', (remoteStream) => {
-      logEvent('acceptCall: received peer.stream');
-      console.table(remoteStream)
+      setCallState('Connected')
       setRemoteStream(remoteStream);
     });
 
@@ -157,37 +152,30 @@ const VideoChat = () => {
   }
 
   const hangUp = () => {
-    logEvent(`Hang up`)
     setRemoteStream(null)
+    setRemoteSocketId('')
+    setCallState('Idle')
   }
 
   const handleRemoteSocketIdChange = (event, child) => {
     setRemoteSocketId(event.target.value);
   };
 
-  const formatEvents = () => {
-    return <>{events.map((event, idx) => <Typography key={idx}>{event}</Typography>)}</>
-  }
-
   return (
     <Grid container spacing={5}>
       <Grid item xs={12}>
         <Typography align="center" variant="h3" sx={{fontSize: "2em"}}>Chat</Typography>
       </Grid>
-      {
-        allUsers && 
-        <Grid item xs={4}>
-          <Typography>Who's online:</Typography>
-          <>{allUsers.map((user, idx) => <Grid key={idx} item xs={12}><Button onClick={() => onMakeCall(user.socketId)}>{user.name}</Button></Grid> )}</>
-        </Grid>
-      }
-      <Grid item xs={4} textAlign="center" sx={{paddingTop: "0px", margin: "0px"}}>
-        <Video stream={localStream} />
-        {false && <Typography>Local Socket Id: {localSocketId}</Typography>}
+      <Grid item xs={12}>
+        <VideoChatUsers users={allUsers} makeCall={onMakeCall}/>
       </Grid>
-      <Grid item xs={4} textAlign="center" sx={{paddingTop: "0px", margin: "0px"}}>
+      <Grid item xs={12} sm={6} textAlign="center" sx={{paddingTop: "0px", margin: "0px"}}>
+        <Video stream={localStream} />
+        <Typography>{localName}</Typography>
+      </Grid>
+      <Grid item xs={12} sm={6} textAlign="center" sx={{paddingTop: "0px", margin: "0px"}}>
         <Video stream={remoteStream} />
-        {false && <Typography>Remote Socket Id: {remoteSocketId}</Typography>}
+        {callState === "Connected" && <Typography>{remoteName}</Typography> }
       </Grid>
       {
        false && <Grid item xs={12} textAlign="center">
@@ -200,7 +188,7 @@ const VideoChat = () => {
       </Grid>
       }
       {
-        call.isReceivingCall && !callAccepted &&
+        callState === "Ringing" &&
         <Grid item xs={12} textAlign="center">
           <Typography>Call from: {remoteName}:{remoteSocketId}</Typography>
           <Button onClick={acceptCall}>Accept</Button>
@@ -208,7 +196,7 @@ const VideoChat = () => {
       }
 
       {
-        callAccepted &&
+        callState === "Connected" &&
         <Grid item xs={12} textAlign="center">
           <Button onClick={hangUp}>Hang Up</Button>
         </Grid>
@@ -224,7 +212,6 @@ const VideoChat = () => {
 
       <Grid item xs={12} textAlign="center">
         <Typography visibility={"hidden"}>Local Socket Id: {localSocketId}</Typography>
-        {false && formatEvents()}
       </Grid>
     </Grid>
   )
