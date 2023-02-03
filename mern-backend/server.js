@@ -16,9 +16,9 @@ const chatroomRoutes = require("./src/routes/chatroomRoutes");
 const app = express();
 app.use(express.json());
 app.use(cors({
-  origin: ["http://localhost:3000", "https://mern-with-auth-frontend.onrender.com"],
-  credentials: true,
-  methods: ['GET', 'POST', 'OPTIONS']
+	origin: ["http://localhost:3000", "https://mern-with-auth-frontend.onrender.com"],
+	credentials: true,
+	methods: ['GET', 'POST', 'OPTIONS']
 }));
 
 app.use(cookieParser());
@@ -39,56 +39,60 @@ const io = require("socket.io")(server, {
 // Mongoose
 const PORT = process.env.PORT || process.env.API_PORT;
 mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => {
-    server.listen(PORT, () => {
-      console.log(`Mongoose API server is listening on localhost:${PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.log("database connection failed. Server not started");
-    console.error(err);
-});
+	.connect(process.env.MONGO_URI)
+	.then(() => {
+		server.listen(PORT, () => {
+			console.log(`Mongoose API server is listening on localhost:${PORT}`);
+		});
+	})
+	.catch((err) => {
+		console.log("database connection failed. Server not started");
+		console.error(err);
+	});
 
-const onlineUsers = {};
 io.on("connection", (socket) => {
-	const updateUsers = () => {
+	const updateUsers = async () => {
+		const sockets = await io.fetchSockets();
 		let users = [];
-		for (const key in onlineUsers) {
-			users.push({socketId: key, name: onlineUsers[key]})
+		for (const s of sockets) {
+			users.push({ socketId: s.id, name: s.nickname })
 		}
 		io.sockets.emit("current.users", users);
 	}
 
-	socket.emit("socket.created", socket.id);
-	onlineUsers[socket.id] = 'New user';
+	console.log(`Created new user [${socket.id}]: New user`)
 	updateUsers();
+	socket.emit("socket.created", socket.id);
 
-	socket.on("register", ({socketID, userName}) => {
-		onlineUsers[socket.id] = userName;
+	socket.on("register", ({ userName }) => {
+		socket.nickname = userName;
 		updateUsers();
 	});
 
-  socket.on('disconnect', function(){
-    delete onlineUsers[socket.id];
+	socket.on("call.hangup", ({ socketId }) => {
+		console.log(`call.hangup: ${socketId}`)
+		io.to(socketId).emit("call.hangup");
+	});
+
+	socket.on('disconnect', function () {
 		updateUsers();
 		socket.broadcast.emit("callEnded")
-  });
+	});
 
-	socket.on("call.connect", ({ 
+	socket.on("call.connect", ({
 		remoteSocketId,
 		signalData,
 		originSocketId,
 		originName,
 	}) => {
-		io.to(remoteSocketId).emit("call.incoming", { 
-			signalData, 
-			originSocketId, 
-			originName, 
+		io.to(remoteSocketId).emit("call.incoming", {
+			signalData,
+			originSocketId,
+			originName,
 		});
 	});
 
-	socket.on("call.answer", ({signalData, remoteSocketId}) => {
+	socket.on("call.answer", ({ signalData, remoteSocketId }) => {
 		io.to(remoteSocketId).emit("call.accepted", signalData)
 	});
 });

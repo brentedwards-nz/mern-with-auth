@@ -74,7 +74,7 @@ const Login = () => {
 
   return (
     <Grid>
-      <Paper elevation={10} style={styles.loginPage.paperStyle}>
+      <Paper elevation={0} style={styles.loginPage.paperStyle}>
         <Grid align="center">
           <Avatar style={styles.avatarStyle}><LockOutlinedIcon /></Avatar>
           <h2>Log In</h2>

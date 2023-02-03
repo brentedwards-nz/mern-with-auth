@@ -70,7 +70,7 @@ const Register = () => {
 
   return (
     <Grid>
-      <Paper elevation={10} style={styles.registerPage.paperStyle}>
+      <Paper elevation={0} style={styles.registerPage.paperStyle}>
         <Grid align="center">
           <Avatar style={styles.avatarStyle}><HowToRegIcon /></Avatar>
           <h2>Register</h2>
